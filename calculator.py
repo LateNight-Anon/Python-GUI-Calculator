@@ -7,13 +7,14 @@ from time import sleep
 
 def createPlotWindow() -> None:
     def generateError() -> None:
-        errorLabel.place(x=200,y=200)
+        errorLabel.place(x=30,y=425)
         sleep(1.5)
         errorLabel.place(x=999,y=999)
         
     def plotData() -> None:
         data: List[float | str] = dataEntry.get()
         try:
+            if len(data) == 1 or len(data) == 0: raise ValueError()
             data = data.split(',')
             for i in range(len(data)): data[i].replace(' ','')
             for i in range(len(data)): data[i] = float(data[i])
@@ -90,11 +91,11 @@ def equals() -> None:
         for i, char in enumerate(displayString):
             if char in ('+','-','*','/','^') and char == displayString[i+1]: raise Exception()
         if rounding is not None:
-            endResult: float = str(round(eval(inputString),rounding))
+            endResult: float | str = str(round(eval(inputString),rounding))
             output.configure(text=endResult)
             output.place(x=170-len(endResult)*6.5,y=120)
         else:
-            endResult: float = str(eval(inputString))
+            endResult: float | str = str(eval(inputString))
             output.configure(text=endResult)
             output.place(x=170-len(endResult)*6.5,y=120)
     except Exception:
@@ -103,23 +104,23 @@ def equals() -> None:
     isDisplayingValue = True
 
 def createHexWindow() -> None:
-    def generateErrorMessage(string: str, time: float) -> None:
+    def generateErrorMessage(string: str) -> None:
         errorLabel.configure(text=string)
-        errorLabel.place(x=20,y=450)
-        sleep(time)
+        errorLabel.place(x=350,y=30)
+        sleep(1.5)
         errorLabel.place(x=999,y=999)
         
-    def isValid(hexString: str, isDark: bool) -> None: #todo make except create label then delete label after a bit without freezing code
+    def isValid(hexString: str, isDark: bool) -> None:
         global lightHex, darkHex
         hexString = hexString.lower()
         try:
             if hexString[0] == "#" and len(hexString) == 7:
                 for i, character in enumerate(hexString):
-                    if character not in ('1','2','3','4','5','6','7','8','9','0','a','b','c','d','e','f') and i != 0: raise Exception(str(i + 1))
-            else: raise Exception("not a hexadecimal number")
-        except Exception as index:
-            if isDark: Thread(target=generateErrorMessage,args=("Error in dark hex at index " + index)).start()
-            else: Thread(target=generateErrorMessage,args=("Error in light hex at index " + index)).start()
+                    if character not in ('1','2','3','4','5','6','7','8','9','0','a','b','c','d','e','f') and i != 0: raise Exception()
+            else: raise Exception()
+        except Exception:
+            if isDark: Thread(target=generateErrorMessage,args=("Error in dark hex",)).start()
+            else: Thread(target=generateErrorMessage,args=("Error in light hex",)).start()
         else:
             if isDark: darkHex = hexString
             else: lightHex = hexString
@@ -140,7 +141,7 @@ def createHexWindow() -> None:
     darkEntry.place(x=290,y=202.5)
     Button(hexApp,text='s',font=("Arial",25),borderwidth=4,relief="solid",width=3,height=1,bg="green",command=lambda: isValid(lightEntry.get(),False)).place(x=480,y=90.5)
     Button(hexApp,text='s',font=("Arial",25),borderwidth=4,relief="solid",width=3,height=1,bg="green",command=lambda: isValid(darkEntry.get(),True)).place(x=480,y=192.5)
-    errorLabel = Label(fg="red",font=("Arial",25),bg="#444444")
+    errorLabel = Label(hexApp,fg="red",font=("Arial",22),bg="#444444")
     errorLabel.place(x=999,y=999)
 
     hexApp.mainloop()
