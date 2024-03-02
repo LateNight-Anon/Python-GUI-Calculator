@@ -12,7 +12,7 @@ def createPlotWindow() -> None:
         errorLabel.place(x=999,y=999)
         
     def plotData() -> None:
-        data: List[float | str] = dataEntry.get()
+        data: List[float] | str = dataEntry.get()
         try:
             if len(data) == 1 or len(data) == 0: raise ValueError()
             data = data.split(',')
